@@ -2,12 +2,13 @@ package id.ac.ui.cs.advprog.eshop.controller;
 
 import id.ac.ui.cs.advprog.eshop.model.Order;
 import id.ac.ui.cs.advprog.eshop.model.Payment;
+import id.ac.ui.cs.advprog.eshop.model.Product;
 import id.ac.ui.cs.advprog.eshop.service.OrderService;
 import id.ac.ui.cs.advprog.eshop.service.PaymentService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.ArrayList;
@@ -26,10 +27,10 @@ class OrderControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
+    @MockitoBean
     private OrderService orderService;
 
-    @MockBean
+    @MockitoBean
     private PaymentService paymentService;
 
     @Test
@@ -60,7 +61,9 @@ class OrderControllerTest {
 
     @Test
     void payOrderPage() throws Exception {
-        Order order = new Order("o-001", new ArrayList<>(), 1000L, "Safira");
+        List<Product> products = new ArrayList<>();
+        products.add(new Product());
+        Order order = new Order("o-001", products, 1000L, "Safira");
         when(orderService.findById("o-001")).thenReturn(order);
 
         mockMvc.perform(get("/order/pay/o-001"))
@@ -70,7 +73,9 @@ class OrderControllerTest {
 
     @Test
     void payOrderPost() throws Exception {
-        Order order = new Order("o-001", new ArrayList<>(), 1000L, "Safira");
+        List<Product> products = new ArrayList<>();
+        products.add(new Product());
+        Order order = new Order("o-001", products, 1000L, "Safira");
         Payment payment = new Payment("p-001", "VOUCHER_CODE", new HashMap<>());
         when(orderService.findById("o-001")).thenReturn(order);
         when(paymentService.addPayment(any(), anyString(), any())).thenReturn(payment);
