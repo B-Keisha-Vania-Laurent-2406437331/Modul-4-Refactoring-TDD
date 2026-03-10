@@ -78,6 +78,7 @@ class PaymentServiceImplTest {
     @Test
     void testSetStatusSuccess() {
         Payment payment = new Payment("p-001", "VOUCHER_CODE", voucherData);
+        payment.setOrder(order);
         doReturn(payment).when(paymentRepository).save(any(Payment.class));
 
         Payment result = paymentService.setStatus(payment, "SUCCESS");
@@ -89,6 +90,7 @@ class PaymentServiceImplTest {
     @Test
     void testSetStatusRejected() {
         Payment payment = new Payment("p-001", "VOUCHER_CODE", voucherData);
+        payment.setOrder(order);
         doReturn(payment).when(paymentRepository).save(any(Payment.class));
 
         Payment result = paymentService.setStatus(payment, "REJECTED");
