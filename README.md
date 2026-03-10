@@ -90,3 +90,62 @@ Beyond source code issues, I also encountered several technical difficulties dur
 I believe the current implementation successfully meets the definitions of Continuous Integration (CI) and Continuous Deployment (CD). The CI aspect is fulfilled by the automated workflow that triggers test suites and static analysis via SonarCloud upon every push, ensuring code integrity before it is merged. The CD aspect is achieved through the automated deployment to Koyeb, which ensures that any successful push to the `main` branch is immediately reflected in the live production environment. Additionally, the use of `paths-ignore` for documentation files demonstrates an efficient pipeline that avoids unnecessary deployment cycles for non-code changes.
 
 </details>
+
+<details>
+<summary><b>Module 3 - OO Principles</b></summary>
+
+# Reflection 1
+
+## 1. SOLID Principles
+In this project, I evaluated the existing codebase and applied several **SOLID** principles to improve its maintainability and readability:
+
+* **Single Responsibility Principle (SRP):**
+  * I separated the `CarController` class, which was initially placed inside the `ProductController.java` file, into its own dedicated `CarController.java` file. 
+  * I moved the business logic for generating UUIDs for new cars from the `CarRepository` to the `CarServiceImpl`. This ensures the repository is strictly responsible for data storage operations, while the service handles business logic.
+* **Open-Closed Principle (OCP) & Liskov Substitution Principle (LSP):**
+  * I removed the `extends ProductController` inheritance from `CarController`. Conceptually, a `CarController` is not a true substitute for a `ProductController` (violating LSP). By removing this inheritance, both controllers are now closed to unintended modifications caused by changes in the other class, while remaining open for their respective extensions (satisfying OCP).
+* **Interface Segregation Principle (ISP):**
+  * This principle was already satisfied in the initial design. The interfaces (`CarService` and `ProductService`) are small, specific, and focused solely on their respective entities. The implementation classes are not forced to depend on or implement methods they do not use.
+* **Dependency Inversion Principle (DIP):**
+  * In `CarController`, I changed the injected dependency from the concrete class `CarServiceImpl` to its abstraction, the `CarService` interface.
+
+## 2. Advantages of applying SOLID principles
+Applying SOLID principles makes the codebase significantly easier to maintain, scale, and test. It reduces coupling between components and increases cohesion. 
+
+**Example:** By applying SRP, I separated the UUID generation logic into `CarServiceImpl` and left `CarRepository` purely for data storage. Because of this, if the business later decides to change how IDs are generated (for instance, using a sequential database ID or a custom string format instead of a UUID), I only need to modify the Service layer. The Repository remains completely untouched, making the system easier to maintain. Furthermore, by applying DIP (`CarController` depending on the `CarService` interface rather than a concrete class), the application becomes highly extensible. If we ever need to implement a new type of car service (e.g., a `PremiumCarServiceImpl` that applies different business rules), we can easily swap the implementation being injected without modifying a single line of code inside the `CarController`.
+
+## 3. Disadvantages of not applying SOLID principles
+Not applying SOLID principles leads to "spaghetti code" that is tightly coupled, fragile, and prone to cascading errors where a change in one place unexpectedly breaks another unrelated part of the system.
+
+**Example:** A major disadvantage of violating LSP and OCP was seen when `CarController` originally extended `ProductController`. If left unfixed, any future modifications to `ProductController`, such as adding a mandatory validation, a new security check, or a product-specific `@ModelAttribute` would be automatically and incorrectly inherited by `CarController`. This means adding a new feature for "Products" could unexpectedly crash or alter the behavior of the "Cars" feature. Additionally, violating SRP by keeping ID generation inside the `CarRepository`'s `create` method would cause severe logical bugs. For instance, if we later added a feature to "Import" existing cars from an external file where the cars *already have* their own IDs, the repository would forcefully overwrite their original IDs with newly generated UUIDs because it improperly mixed business logic with data storage.
+
+</details>
+
+<details>
+<summary><b>Module 4 - TDD & Refactoring</b></summary>
+
+# Reflection
+
+## 1. TDD Flow Usefulness
+
+The TDD flow was useful for me in this module. Writing tests before the actual code made me think about what the code should do before writing it. This helped me avoid confusion later, especially when implementing the Payment feature where there were many conditions to check, like voucher code validation and how payment status affects order status.
+
+The RED-GREEN-REFACTOR cycle also helped me stay focused. When a test failed, I only wrote the minimum code needed to make it pass, which kept the code clean. Without TDD, I probably would have over-engineered things or missed some edge cases.
+
+One thing I would improve next time is to make my tests less dependent on implementation details. Some of my tests broke when I refactored the internal logic, even though the behavior did not change. I should focus more on testing the expected output rather than how the code works internally.
+
+## 2. F.I.R.S.T. Principle
+
+My unit tests mostly follow the F.I.R.S.T. principle:
+
+- **Fast:** The tests run quickly because I used Mockito to mock dependencies like repositories, so no real database or I/O is involved.
+
+- **Independent:** Each test uses `@BeforeEach` to set up fresh data, so tests do not affect each other.
+
+- **Repeatable:** Since everything is mocked, the tests give the same result every time regardless of the environment.
+
+- **Self-Validating:** All tests use clear assertions like `assertEquals` and `assertThrows`, so they automatically show pass or fail.
+
+- **Timely:** Because I followed TDD, the tests were written before the production code, which is the right time to write them.
+
+</details>
