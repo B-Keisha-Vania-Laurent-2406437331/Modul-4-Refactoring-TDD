@@ -74,4 +74,28 @@ class PaymentRepositoryTest {
         List<Payment> all = paymentRepository.findAll();
         assertEquals(2, all.size());
     }
+
+    @Test
+    void testSaveNewPaymentWhenRepositoryNotEmpty() {
+        Payment payment1 = new Payment("p-001", "VOUCHER_CODE", paymentData);
+        paymentRepository.save(payment1);
+
+        Map<String, String> codData = new HashMap<>();
+        codData.put("address", "Jl. Merdeka");
+        codData.put("deliveryFee", "10000");
+        Payment payment2 = new Payment("p-002", "CASH_ON_DELIVERY", codData);
+        Payment result = paymentRepository.save(payment2);
+
+        assertEquals("p-002", result.getId());
+        assertEquals(2, paymentRepository.findAll().size());
+    }
+
+    @Test
+    void testFindByIdNotFoundWhenRepositoryNotEmpty() {
+        Payment payment = new Payment("p-001", "VOUCHER_CODE", paymentData);
+        paymentRepository.save(payment);
+
+        Payment found = paymentRepository.findById("p-999");
+        assertNull(found);
+    }
 }

@@ -126,4 +126,16 @@ class PaymentServiceImplTest {
 
         assertEquals(2, result.size());
     }
+
+    @Test
+    void testSetStatusWaiting() {
+        Payment payment = new Payment("p-001", "VOUCHER_CODE", voucherData);
+        payment.setOrder(order);
+        doReturn(payment).when(paymentRepository).save(any(Payment.class));
+
+        Payment result = paymentService.setStatus(payment, "WAITING");
+
+        assertEquals("WAITING", result.getStatus());
+        assertEquals("WAITING_PAYMENT", order.getStatus());
+    }
 }
