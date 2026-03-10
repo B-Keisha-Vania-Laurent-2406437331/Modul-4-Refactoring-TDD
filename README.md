@@ -156,7 +156,7 @@ The overall structure of the code is clean and easy to follow. The separation be
 
 ## 2. What did you do to contribute to your partner's code?
 
-I reviewed the pull request and left comments on the code smells I found. I then created a new branch `refactor/[NPM]` based on the `order` branch and fixed the identified issues. Finally, I opened a new pull request from the refactor branch to the `order` branch.
+I reviewed the pull request and left comments on the code smells I found. I then created a new branch `refactor/2406437331` based on the `order` branch and fixed the identified issues. Finally, I opened a new pull request from the refactor branch to the `order` branch.
 
 ## 3. What code smells did you find?
 
