@@ -2,27 +2,37 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Order History</title>
+    <title>Pay Order</title>
 </head>
 <body>
-<h1>Order History</h1>
-<form method="post" th:action="@{/order/history}">
-    <label>Name: <input type="text" name="author" required/></label><br/>
-    <button type="submit">Search</button>
-</form>
+<h1>Pay Order</h1>
+<div th:if="${order != null}">
+    <p>Order ID: <span th:text="${order.id}"></span></p>
+    <p>Author: <span th:text="${order.author}"></span></p>
+    <p>Status: <span th:text="${order.status}"></span></p>
 
-<div th:if="${orders != null}">
-    <table border="1">
-        <tr>
-            <th>ID</th><th>Author</th><th>Status</th><th>Action</th>
-        </tr>
-        <tr th:each="order : ${orders}">
-            <td th:text="${order.id}"></td>
-            <td th:text="${order.author}"></td>
-            <td th:text="${order.status}"></td>
-            <td><a th:href="@{/order/pay/{id}(id=${order.id})}">Pay</a></td>
-        </tr>
-    </table>
+    <form method="post" th:action="@{/order/pay/{id}(id=${order.id})}">
+        <label>Payment Method:
+            <select name="method">
+                <option value="VOUCHER_CODE">Voucher Code</option>
+                <option value="CASH_ON_DELIVERY">Cash on Delivery</option>
+            </select>
+        </label><br/>
+
+        <label>Voucher Code:
+            <input type="text" name="voucherCode"/>
+        </label><br/>
+
+        <label>Address:
+            <input type="text" name="address"/>
+        </label><br/>
+
+        <label>Delivery Fee:
+            <input type="text" name="deliveryFee"/>
+        </label><br/>
+
+        <button type="submit">Pay</button>
+    </form>
 </div>
 </body>
 </html>
