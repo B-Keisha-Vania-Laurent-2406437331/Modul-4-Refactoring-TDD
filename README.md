@@ -148,4 +148,32 @@ My unit tests mostly follow the F.I.R.S.T. principle:
 
 - **Timely:** Because I followed TDD, the tests were written before the production code, which is the right time to write them.
 
+# Bonus 2 Reflection
+
+## 1. What do you think about your partner's code?
+
+The overall structure of the code is clean and easy to follow. The separation between layers (model, repository, service) is properly done. However, there are several areas that need improvement, mainly around the use of hardcoded strings, missing update logic in the repository, incorrect payment status for COD, and the use of field injection instead of constructor injection.
+
+## 2. What did you do to contribute to your partner's code?
+
+I reviewed the pull request and left comments on the code smells I found. I then created a new branch `refactor/[NPM]` based on the `order` branch and fixed the identified issues. Finally, I opened a new pull request from the refactor branch to the `order` branch.
+
+## 3. What code smells did you find?
+
+- **Magic strings:** `PaymentServiceImpl` used hardcoded strings like `"VOUCHER"`, `"COD"`, `"BANK_TRANSFER"`, `"SUCCESS"`, `"REJECTED"`, and `"WAITING"` directly instead of using enums, making the code fragile and hard to maintain.
+- **Missing update logic in PaymentRepository:** `save()` always added a new entry without checking if a payment with the same ID already existed, which could cause duplicate data.
+- **Exposed internal state:** `findAll()` returned the internal list directly, allowing external code to accidentally modify the repository's data.
+- **Field injection:** Both `PaymentServiceImpl` and `OrderServiceImpl` used `@Autowired` field injection instead of constructor injection, which makes the dependencies less explicit and harder to test.
+- **Incorrect COD status:** The COD validation set payment status to `"SUCCESS"` instead of `"WAITING"`, which does not match the expected payment flow.
+- **Silent failure in createOrder:** `OrderServiceImpl.createOrder()` returned `null` when a duplicate order was found instead of throwing an exception, making bugs harder to detect.
+
+## 4. What refactoring steps did you suggest and execute?
+
+- Added `PaymentMethod` and `PaymentStatus` enums to replace all magic strings in `PaymentServiceImpl`.
+- Fixed `PaymentRepository.save()` to check for existing IDs before adding, enabling proper update behavior.
+- Fixed `PaymentRepository.findAll()` to return a new `ArrayList` copy instead of the internal list.
+- Fixed COD validation to correctly set status to `"WAITING"` instead of `"SUCCESS"`.
+- Replaced `@Autowired` field injection with constructor injection in both `PaymentServiceImpl` and `OrderServiceImpl`.
+- Updated `OrderServiceImpl.createOrder()` to throw `IllegalArgumentException` instead of returning `null` for duplicate orders.
+
 </details>
